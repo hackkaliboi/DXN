@@ -17,7 +17,7 @@ const Author = () => {
   useEffect(() => {
     if (author) {
       updatePageSEO({
-        title: `${author.name} - Author | BlogSpace`,
+        title: `${author.name} - Author | DXN`,
         description: author.bio,
         canonical: `${window.location.origin}/author/${author.id}`,
       });

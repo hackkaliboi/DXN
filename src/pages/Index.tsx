@@ -58,7 +58,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center text-primary-foreground space-y-8 animate-fade-in">
               <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4">
-                <span className="text-sm font-medium">✨ Welcome to BlogSpace</span>
+                <span className="text-sm font-medium">✨ Welcome to DXN</span>
               </div>
               
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">

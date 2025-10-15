@@ -22,7 +22,7 @@ const BlogPost = () => {
   useEffect(() => {
     if (post) {
       updatePageSEO({
-        title: `${post.title} | BlogSpace`,
+        title: `${post.title} | DXN`,
         description: post.excerpt,
         type: "article",
         author: post.author,
