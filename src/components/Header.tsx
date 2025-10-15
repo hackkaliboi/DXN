@@ -21,6 +21,9 @@ const Header = () => {
           <Link to="/about" className="text-sm font-medium transition-colors hover:text-primary">
             About
           </Link>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/auth">Sign In</Link>
+          </Button>
           <Button variant="default" size="sm" asChild>
             <a href="#newsletter">Subscribe</a>
           </Button>

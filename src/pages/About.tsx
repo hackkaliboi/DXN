@@ -8,15 +8,20 @@ const About = () => {
       <Header />
       
       <main className="container max-w-4xl py-16">
-        <div className="space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-5xl font-bold">About BlogSpace</h1>
-            <p className="text-xl text-muted-foreground">
-              A modern platform for sharing ideas and stories
+        <div className="space-y-12 animate-fade-in">
+          <div className="space-y-4 text-center">
+            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-4">
+              <span className="text-sm font-medium text-primary">Our Story</span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-hero bg-clip-text text-transparent">
+              About BlogSpace
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              A modern platform for sharing ideas and stories that matter
             </p>
           </div>
 
-          <Card className="p-8 bg-gradient-card">
+          <Card className="p-8 md:p-12 bg-gradient-card border-primary/10 hover-scale transition-all duration-300">
             <div className="space-y-6">
               <p className="text-lg leading-relaxed">
                 Welcome to BlogSpace, where creativity meets technology. We're passionate about 
@@ -35,18 +40,24 @@ const About = () => {
             </div>
           </Card>
 
-          <div className="grid md:grid-cols-3 gap-6 pt-8">
-            <Card className="p-6 text-center bg-gradient-card">
-              <div className="text-3xl font-bold text-primary mb-2">500+</div>
-              <div className="text-muted-foreground">Articles Published</div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="p-8 text-center bg-gradient-card border-primary/10 hover-scale transition-all duration-300 group">
+              <div className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
+                500+
+              </div>
+              <div className="text-muted-foreground font-medium">Articles Published</div>
             </Card>
-            <Card className="p-6 text-center bg-gradient-card">
-              <div className="text-3xl font-bold text-primary mb-2">50K+</div>
-              <div className="text-muted-foreground">Monthly Readers</div>
+            <Card className="p-8 text-center bg-gradient-card border-primary/10 hover-scale transition-all duration-300 group">
+              <div className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
+                50K+
+              </div>
+              <div className="text-muted-foreground font-medium">Monthly Readers</div>
             </Card>
-            <Card className="p-6 text-center bg-gradient-card">
-              <div className="text-3xl font-bold text-primary mb-2">100+</div>
-              <div className="text-muted-foreground">Contributors</div>
+            <Card className="p-8 text-center bg-gradient-card border-primary/10 hover-scale transition-all duration-300 group">
+              <div className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
+                100+
+              </div>
+              <div className="text-muted-foreground font-medium">Contributors</div>
             </Card>
           </div>
         </div>

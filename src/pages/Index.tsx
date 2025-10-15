@@ -7,6 +7,7 @@ import SearchBar from "@/components/SearchBar";
 import CategoryFilter from "@/components/CategoryFilter";
 import AuthorCard from "@/components/AuthorCard";
 import BackToTop from "@/components/BackToTop";
+import { Button } from "@/components/ui/button";
 import { blogPosts, authors } from "@/data/blogPosts";
 import heroBg from "@/assets/hero-bg.jpg";
 import { TrendingUp } from "lucide-react";
@@ -51,16 +52,38 @@ const Index = () => {
             backgroundBlendMode: 'overlay'
           }}
         />
-        <div className="relative container py-24 md:py-32">
-          <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              Stories That Inspire
-            </h1>
-            <p className="text-xl md:text-2xl opacity-90 mb-8">
-              Discover insights on design, productivity, and technology from creators around the world
-            </p>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
+        
+        <div className="relative container py-32 md:py-40">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center text-primary-foreground space-y-8 animate-fade-in">
+              <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4">
+                <span className="text-sm font-medium">✨ Welcome to BlogSpace</span>
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+                Stories That <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">Inspire</span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+                Discover insights on design, productivity, and technology from creators around the world
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Button size="lg" className="text-lg px-8 hover-scale" asChild>
+                  <a href="#newsletter">Start Reading</a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 text-white" asChild>
+                  <a href="#contributors">Meet Our Writers</a>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
       </section>
 
       {/* Featured Posts Section */}
