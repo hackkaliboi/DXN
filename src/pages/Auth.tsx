@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,29 +7,162 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, Github, Chrome } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+const authSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  fullName: z.string().min(2, "Name must be at least 2 characters").optional(),
+});
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Placeholder for future implementation
-    toast({
-      title: "Coming Soon",
-      description: "Authentication functionality will be implemented later.",
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/');
+      }
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && event === 'SIGNED_IN') {
+        navigate('/');
+      }
     });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Validate input
+      const validation = authSchema.safeParse({
+        email,
+        password,
+        fullName: isLogin ? undefined : name,
+      });
+
+      if (!validation.success) {
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: validation.error.errors[0].message,
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (isLogin) {
+        // Sign in
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            toast({
+              variant: "destructive",
+              title: "Sign In Failed",
+              description: "Invalid email or password. Please try again.",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Sign In Failed",
+              description: error.message,
+            });
+          }
+        } else {
+          toast({
+            title: "Welcome back!",
+            description: "You've successfully signed in.",
+          });
+        }
+      } else {
+        // Sign up
+        const redirectUrl = `${window.location.origin}/`;
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              full_name: name,
+            },
+          },
+        });
+
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            toast({
+              variant: "destructive",
+              title: "Sign Up Failed",
+              description: "This email is already registered. Please sign in instead.",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Sign Up Failed",
+              description: error.message,
+            });
+          }
+        } else {
+          toast({
+            title: "Account Created!",
+            description: "Your account has been created successfully.",
+          });
+          // Auto sign in after signup
+        }
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    toast({
-      title: "Coming Soon",
-      description: `${provider} login will be implemented later.`,
-    });
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: `${provider === 'google' ? 'Google' : 'GitHub'} Sign In Failed`,
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to sign in with ${provider === 'google' ? 'Google' : 'GitHub'}.`,
+      });
+    }
   };
 
   return (
@@ -119,8 +252,8 @@ const Auth = () => {
               </div>
             )}
 
-            <Button type="submit" size="lg" className="w-full">
-              {isLogin ? "Sign In" : "Create Account"}
+            <Button type="submit" size="lg" className="w-full" disabled={loading}>
+              {loading ? "Loading..." : (isLogin ? "Sign In" : "Create Account")}
             </Button>
           </form>
 
@@ -137,7 +270,7 @@ const Auth = () => {
               variant="outline"
               size="lg"
               className="w-full"
-              onClick={() => handleSocialLogin("Google")}
+              onClick={() => handleSocialLogin("google")}
             >
               <Chrome className="h-5 w-5 mr-2" />
               Google
@@ -147,7 +280,7 @@ const Auth = () => {
               variant="outline"
               size="lg"
               className="w-full"
-              onClick={() => handleSocialLogin("GitHub")}
+              onClick={() => handleSocialLogin("github")}
             >
               <Github className="h-5 w-5 mr-2" />
               GitHub
