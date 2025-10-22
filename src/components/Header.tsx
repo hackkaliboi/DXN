@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAdmin } from "@/hooks/useAdmin";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -51,7 +54,7 @@ const Header = () => {
           </span>
         </Link>
         
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-4">
           <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
             Home
           </Link>
@@ -61,8 +64,17 @@ const Header = () => {
           <Link to="/about" className="text-sm font-medium transition-colors hover:text-primary">
             About
           </Link>
+          <ThemeToggle />
           {user ? (
             <>
+              {isAdmin && (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/admin">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4" />
                 <span className="hidden md:inline">{user.email?.split('@')[0]}</span>
