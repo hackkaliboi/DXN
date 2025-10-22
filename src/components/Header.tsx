@@ -56,7 +56,7 @@ const Header = () => {
             Home
           </Link>
           <Link to="/archive" className="text-sm font-medium transition-colors hover:text-primary">
-            Archive
+            Articles
           </Link>
           <Link to="/about" className="text-sm font-medium transition-colors hover:text-primary">
             About

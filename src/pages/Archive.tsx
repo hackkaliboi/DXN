@@ -41,7 +41,7 @@ const Archive = () => {
         <div className="max-w-4xl mx-auto mb-12">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="h-8 w-8 text-primary" />
-            <h1 className="text-5xl font-bold">Archive</h1>
+            <h1 className="text-5xl font-bold">Articles</h1>
           </div>
           <p className="text-xl text-muted-foreground mb-8">
             Browse all our articles organized by date and category
