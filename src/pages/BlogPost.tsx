@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { blogPosts, authors } from "@/data/blogPosts";
+import { authors } from "@/data/blogPosts";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ReadingProgress from "@/components/ReadingProgress";
 import SocialShare from "@/components/SocialShare";
-import RelatedPosts from "@/components/RelatedPosts";
 import CommentSection from "@/components/CommentSection";
 import BackToTop from "@/components/BackToTop";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -14,31 +14,113 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowLeft, Eye, User } from "lucide-react";
 import { updatePageSEO, generateStructuredData } from "@/utils/seo";
 
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  cover_image: string | null;
+  slug: string;
+  category: string;
+  author: string;
+  authorId: string;
+  date: string;
+  readTime: string;
+  views: number;
+  tags: string[];
+  image: string;
+}
+
 const BlogPost = () => {
   const { id } = useParams();
-  const post = blogPosts.find(p => p.id === id);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
   const author = post ? authors.find(a => a.id === post.authorId) : null;
 
   useEffect(() => {
-    if (post) {
-      updatePageSEO({
-        title: `${post.title} | DXN`,
-        description: post.excerpt,
-        type: "article",
-        author: post.author,
-        keywords: [post.category, ...post.tags],
-        canonical: `${window.location.origin}/post/${post.id}`,
-      });
+    fetchPost();
+  }, [id]);
 
-      generateStructuredData("article", {
-        title: post.title,
-        description: post.excerpt,
-        image: post.image,
-        datePublished: post.date,
-        author: post.author,
-      });
+  const fetchPost = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select(`
+          *,
+          categories (name),
+          profiles (full_name)
+        `)
+        .eq("id", id)
+        .eq("published", true)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        // Increment views
+        await supabase
+          .from("blog_posts")
+          .update({ views: (data.views || 0) + 1 })
+          .eq("id", id);
+
+        const formattedPost: BlogPost = {
+          id: data.id,
+          title: data.title,
+          excerpt: data.excerpt,
+          content: data.content,
+          cover_image: data.cover_image,
+          slug: data.slug,
+          category: data.categories?.name || "Uncategorized",
+          author: data.profiles?.full_name || "Anonymous",
+          authorId: data.author_id,
+          date: new Date(data.created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          readTime: `${data.reading_time || 5} min read`,
+          views: (data.views || 0) + 1,
+          tags: [],
+          image: data.cover_image || "",
+        };
+
+        setPost(formattedPost);
+
+        updatePageSEO({
+          title: `${formattedPost.title} | DXN`,
+          description: formattedPost.excerpt,
+          type: "article",
+          author: formattedPost.author,
+          keywords: [formattedPost.category],
+          canonical: `${window.location.origin}/post/${formattedPost.id}`,
+        });
+
+        generateStructuredData("article", {
+          title: formattedPost.title,
+          description: formattedPost.excerpt,
+          image: formattedPost.image,
+          datePublished: formattedPost.date,
+          author: formattedPost.author,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [post]);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-16 text-center">
+          <p className="text-muted-foreground">Loading post...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -114,13 +196,10 @@ const BlogPost = () => {
             />
           </div>
 
-          <div className="prose prose-lg max-w-none pt-8">
-            {post.content.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="text-foreground/90 leading-relaxed mb-6">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+          <div 
+            className="prose prose-lg max-w-none pt-8 prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-a:text-primary"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
 
           {author && (
             <div className="mt-12 p-6 border border-border rounded-xl bg-gradient-card">
@@ -142,8 +221,6 @@ const BlogPost = () => {
 
           <CommentSection />
         </div>
-
-        <RelatedPosts currentPostId={post.id} posts={blogPosts} />
       </article>
 
       <Footer />
