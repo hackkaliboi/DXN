@@ -126,12 +126,12 @@ const Posts = () => {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold">Posts</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold">Posts</h1>
                         <p className="text-muted-foreground">Manage your blog posts</p>
                     </div>
-                    <Button asChild>
+                    <Button asChild className="w-full sm:w-auto">
                         <Link to="/admin/post/new">
                             <Plus className="h-4 w-4 mr-2" />
                             New Post
@@ -160,9 +160,9 @@ const Posts = () => {
                         {posts.map((post) => (
                             <Card key={post.id}>
                                 <CardHeader>
-                                    <div className="flex items-start justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2">
+                                            <div className="flex flex-wrap items-center gap-2 mb-2">
                                                 <CardTitle className="text-xl">{post.title}</CardTitle>
                                                 {post.published ? (
                                                     <Badge variant="default">Published</Badge>
@@ -173,7 +173,7 @@ const Posts = () => {
                                             <p className="text-sm text-muted-foreground line-clamp-2">
                                                 {post.excerpt}
                                             </p>
-                                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                            <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-muted-foreground">
                                                 <span>{post.categories?.name}</span>
                                                 <span>•</span>
                                                 <span className="flex items-center gap-1">

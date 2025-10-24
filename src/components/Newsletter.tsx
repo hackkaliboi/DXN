@@ -20,11 +20,11 @@ const Newsletter = () => {
   };
 
   return (
-    <div className="bg-gradient-card rounded-xl p-8 md:p-12">
+    <div className="bg-gradient-card rounded-xl p-6 sm:p-8 md:p-12">
       <div className="max-w-2xl mx-auto text-center space-y-4">
-        <Mail className="h-12 w-12 mx-auto text-primary" />
-        <h2 className="text-3xl md:text-4xl font-bold">Stay Updated</h2>
-        <p className="text-lg text-muted-foreground">
+        <Mail className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-primary" />
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Stay Updated</h2>
+        <p className="text-base sm:text-lg text-muted-foreground">
           Get the latest articles and insights delivered directly to your inbox. No spam, unsubscribe anytime.
         </p>
         
@@ -37,7 +37,7 @@ const Newsletter = () => {
             required
             className="flex-1"
           />
-          <Button type="submit">
+          <Button type="submit" className="w-full sm:w-auto">
             Subscribe
           </Button>
         </form>

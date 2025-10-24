@@ -135,31 +135,31 @@ const Index = () => {
 
         {/* Animated background elements */}
         <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-2/3 right-1/4 w-72 h-72 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-500" />
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-accent/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-2/3 right-1/4 w-32 h-32 sm:w-48 sm:h-48 md:w-72 md:h-72 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-500" />
         </div>
 
-        <div className="relative container py-24 md:py-32 lg:py-40">
+        <div className="relative container py-16 sm:py-24 md:py-32 lg:py-40">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center text-primary-foreground space-y-8 animate-fade-in">
-              <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4 animate-bounce-in">
+            <div className="text-center text-primary-foreground space-y-6 sm:space-y-8 animate-fade-in">
+              <div className="inline-flex items-center px-3 py-1 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4 animate-bounce-in">
                 <span className="mr-2">✨</span>
-                <span className="text-sm font-medium">Welcome to DXN</span>
+                <span className="text-xs sm:text-sm font-medium">Welcome to DXN</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight animate-slide-in-up">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-slide-in-up">
                 Stories That <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">Inspire</span>
               </h1>
 
-              <p className="text-lg sm:text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed animate-slide-in-up delay-150">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed animate-slide-in-up delay-150">
                 Discover insights on design, productivity, and technology from creators around the world
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6 animate-slide-in-up delay-300">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-6 animate-slide-in-up delay-300">
                 <Button
                   size="lg"
-                  className="text-base sm:text-lg px-6 sm:px-8 py-6 hover-scale shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 hover-scale shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                   asChild
                 >
                   <a href="#newsletter">Start Reading</a>
@@ -167,7 +167,7 @@ const Index = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-base sm:text-lg px-6 sm:px-8 py-6 bg-white/10 backdrop-blur-sm border-white/30 hover:bg-white/20 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-white/30 hover:bg-white/20 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                   asChild
                 >
                   <a href="#contributors">Meet Our Writers</a>
@@ -178,24 +178,24 @@ const Index = () => {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 rounded-full border-2 border-white/30 flex justify-center p-1">
-            <div className="w-2 h-2 bg-white/50 rounded-full animate-scroll-bounce" />
+        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 sm:w-8 sm:h-12 rounded-full border-2 border-white/30 flex justify-center p-1">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/50 rounded-full animate-scroll-bounce" />
           </div>
         </div>
       </section>
 
       {/* Featured Posts Section */}
       {featuredPosts.length > 0 && (
-        <section className="container py-16">
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Articles</h2>
-            <p className="text-lg text-muted-foreground">
+        <section className="container py-12 sm:py-16">
+          <div className="mb-8 text-center sm:text-left">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Featured Articles</h2>
+            <p className="text-base sm:text-lg text-muted-foreground">
               Hand-picked stories worth your time
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {featuredPosts.map((post) => (
               <BlogCard key={post.id} {...post} />
             ))}
@@ -204,13 +204,15 @@ const Index = () => {
       )}
 
       {/* Trending Posts Section */}
-      <section className="container py-16">
-        <div className="mb-8 flex items-center gap-2">
-          <TrendingUp className="h-8 w-8 text-primary" />
-          <h2 className="text-3xl md:text-4xl font-bold">Trending Now</h2>
+      <section className="container py-12 sm:py-16">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-2 text-center sm:text-left">
+          <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto sm:mx-0" />
+          <div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Trending Now</h2>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {trendingPosts.map((post) => (
             <BlogCard key={post.id} {...post} />
           ))}
@@ -218,14 +220,14 @@ const Index = () => {
       </section>
 
       {/* All Articles with Search and Filter */}
-      <section className="container py-16">
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">All Articles</h2>
-          <p className="text-lg text-muted-foreground mb-8">
+      <section className="container py-12 sm:py-16">
+        <div className="mb-8 sm:mb-12 text-center sm:text-left">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">All Articles</h2>
+          <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
             Explore our complete collection
           </p>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <SearchBar onSearch={setSearchQuery} />
             <CategoryFilter
               categories={categories}
@@ -235,29 +237,29 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredPosts.map((post) => (
             <BlogCard key={post.id} {...post} />
           ))}
         </div>
 
         {filteredPosts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-lg text-muted-foreground">No articles found matching your search.</p>
+          <div className="text-center py-8 sm:py-12">
+            <p className="text-base sm:text-lg text-muted-foreground">No articles found matching your search.</p>
           </div>
         )}
       </section>
 
       {/* Authors Section */}
-      <section id="contributors" className="container py-16">
-        <div className="mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Contributors</h2>
-          <p className="text-lg text-muted-foreground">
+      <section id="contributors" className="container py-12 sm:py-16">
+        <div className="mb-8 text-center sm:text-left">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Our Contributors</h2>
+          <p className="text-base sm:text-lg text-muted-foreground">
             Meet the talented writers behind our content
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {authorPostCounts.map((author) => (
             <AuthorCard key={author.id} {...author} />
           ))}
@@ -265,7 +267,7 @@ const Index = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section id="newsletter" className="container py-16">
+      <section id="newsletter" className="container py-12 sm:py-16">
         <Newsletter />
       </section>
 

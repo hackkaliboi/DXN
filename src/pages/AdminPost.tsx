@@ -245,7 +245,7 @@ const AdminPost = () => {
               Back
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl sm:text-2xl font-bold">
             {isNewPost ? "Create New Post" : "Edit Post"}
           </h1>
         </div>
@@ -355,7 +355,7 @@ const AdminPost = () => {
                     <img
                       src={formData.cover_image}
                       alt="Cover"
-                      className="w-full h-48 object-cover rounded-md mb-4"
+                      className="w-full h-40 sm:h-48 object-cover rounded-md mb-4"
                     />
                   )}
                   <div className="relative">
@@ -369,7 +369,7 @@ const AdminPost = () => {
                     />
                     <Label
                       htmlFor="cover-image"
-                      className="flex items-center justify-center gap-2 cursor-pointer border border-dashed rounded-md p-6 text-center hover:bg-muted transition-colors"
+                      className="flex items-center justify-center gap-2 cursor-pointer border border-dashed rounded-md p-4 sm:p-6 text-center hover:bg-muted transition-colors"
                     >
                       <Upload className="h-4 w-4" />
                       {uploadingImage ? "Uploading..." : "Upload Image"}

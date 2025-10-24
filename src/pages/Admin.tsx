@@ -104,12 +104,12 @@ const Admin = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground">Welcome to your admin dashboard</p>
           </div>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link to="/">
               <Home className="h-4 w-4 mr-2" />
               Back to Site
@@ -124,7 +124,7 @@ const Admin = () => {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
@@ -175,19 +175,19 @@ const Admin = () => {
               <Button asChild className="h-20 flex flex-col gap-2">
                 <Link to="/admin/post/new">
                   <Plus className="h-6 w-6" />
-                  <span>New Post</span>
+                  <span className="text-sm">New Post</span>
                 </Link>
               </Button>
               <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
                 <Link to="/admin/posts">
                   <FileText className="h-6 w-6" />
-                  <span>Manage Posts</span>
+                  <span className="text-sm">Manage Posts</span>
                 </Link>
               </Button>
               <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
                 <Link to="/admin/users">
                   <Users className="h-6 w-6" />
-                  <span>Manage Users</span>
+                  <span className="text-sm">Manage Users</span>
                 </Link>
               </Button>
               <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
@@ -196,7 +196,7 @@ const Admin = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span>Settings</span>
+                  <span className="text-sm">Settings</span>
                 </Link>
               </Button>
             </div>

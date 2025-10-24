@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings, Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,6 +13,7 @@ const Header = () => {
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -45,6 +46,12 @@ const Header = () => {
     }
   };
 
+  const navItems = [
+    { name: "Home", href: "/" },
+    { name: "Articles", href: "/archive" },
+    { name: "About", href: "/about" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -54,16 +61,27 @@ const Header = () => {
           </span>
         </Link>
         
-        <nav className="flex items-center gap-4">
-          <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
-            Home
-          </Link>
-          <Link to="/archive" className="text-sm font-medium transition-colors hover:text-primary">
-            Articles
-          </Link>
-          <Link to="/about" className="text-sm font-medium transition-colors hover:text-primary">
-            About
-          </Link>
+        {/* Mobile menu button */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
+        
+        {/* Desktop navigation */}
+        <nav className="hidden md:flex items-center gap-4">
+          {navItems.map((item) => (
+            <Link 
+              key={item.name} 
+              to={item.href} 
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              {item.name}
+            </Link>
+          ))}
           <ThemeToggle />
           {user ? (
             <>
@@ -77,7 +95,7 @@ const Header = () => {
               )}
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4" />
-                <span className="hidden md:inline">{user.email?.split('@')[0]}</span>
+                <span className="hidden lg:inline">{user.email?.split('@')[0]}</span>
               </div>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -96,6 +114,54 @@ const Header = () => {
           )}
         </nav>
       </div>
+      
+      {/* Mobile navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur">
+          <div className="container py-4 space-y-4">
+            <div className="flex flex-col space-y-3">
+              {navItems.map((item) => (
+                <Link 
+                  key={item.name} 
+                  to={item.href} 
+                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className="flex items-center justify-between pt-4 border-t border-border">
+              <ThemeToggle />
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">{user.email?.split('@')[0]}</span>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                  <Button variant="default" size="sm" asChild>
+                    <a href="#newsletter">Subscribe</a>
+                  </Button>
+                </div>
+              )}
+            </div>
+            {user && isAdmin && (
+              <Button variant="outline" size="sm" asChild className="w-full">
+                <Link to="/admin" onClick={() => setMobileMenuOpen(false)}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Admin Dashboard
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
