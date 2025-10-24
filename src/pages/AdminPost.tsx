@@ -40,11 +40,8 @@ const AdminPost = () => {
     published: false,
   });
 
-  // Bypass authentication for development
-  const bypassAuth = true;
-
   useEffect(() => {
-    if (!bypassAuth && !adminLoading && !isAdmin) {
+    if (!adminLoading && !isAdmin) {
       navigate("/");
       toast({
         variant: "destructive",
@@ -52,17 +49,16 @@ const AdminPost = () => {
         description: "You don't have permission to access this page.",
       });
     }
-  }, [isAdmin, adminLoading, navigate, toast, bypassAuth]);
+  }, [isAdmin, adminLoading, navigate, toast]);
 
   useEffect(() => {
-    // Proceed with data fetching when bypassing auth or when user is admin
-    if (bypassAuth || isAdmin) {
+    if (isAdmin) {
       fetchCategories();
       if (!isNewPost) {
         fetchPost();
       }
     }
-  }, [isAdmin, id, bypassAuth]);
+  }, [isAdmin, id]);
 
   const fetchCategories = async () => {
     try {
@@ -164,20 +160,15 @@ const AdminPost = () => {
     setSaving(true);
 
     try {
-      // Bypass user authentication for development
-      let userId = "dev-user-id";
-      if (!bypassAuth) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
-        userId = user.id;
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
       const reading_time = calculateReadingTime(formData.content);
 
       const postData = {
         ...formData,
         reading_time,
-        author_id: userId,
+        author_id: user.id,
       };
 
       if (isNewPost) {
@@ -218,8 +209,8 @@ const AdminPost = () => {
     }
   };
 
-  // Show loading state when checking admin status and not bypassing auth
-  if (adminLoading && !bypassAuth) {
+  // Show loading state when checking admin status
+  if (adminLoading) {
     return (
       <AdminLayout>
         <div className="container py-16 text-center">
@@ -229,8 +220,8 @@ const AdminPost = () => {
     );
   }
 
-  // Show nothing if not admin and not bypassing auth
-  if (!isAdmin && !bypassAuth) {
+  // Show nothing if not admin
+  if (!isAdmin) {
     return null;
   }
 

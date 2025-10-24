@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Users, Eye } from "lucide-react";
+import { Plus, FileText, Users, Eye, Home } from "lucide-react";
 
 interface Stats {
   posts: number;
@@ -22,11 +22,8 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Bypass authentication for development
-  const bypassAuth = true;
-
   useEffect(() => {
-    if (!bypassAuth && !adminLoading && !isAdmin) {
+    if (!adminLoading && !isAdmin) {
       navigate("/");
       toast({
         variant: "destructive",
@@ -34,14 +31,13 @@ const Admin = () => {
         description: "You don't have permission to access the admin panel.",
       });
     }
-  }, [isAdmin, adminLoading, navigate, toast, bypassAuth]);
+  }, [isAdmin, adminLoading, navigate, toast]);
 
   useEffect(() => {
-    // Fetch stats regardless of admin status when bypassing auth
-    if (bypassAuth || isAdmin) {
+    if (isAdmin) {
       fetchStats();
     }
-  }, [isAdmin, bypassAuth]);
+  }, [isAdmin]);
 
   const fetchStats = async () => {
     try {
@@ -60,12 +56,27 @@ const Admin = () => {
 
       if (draftsError) throw draftsError;
 
-      // For demo purposes, we'll use mock data for users and views
-      // In a real application, you would fetch this from your database
+      // Fetch users count
+      const { count: usersCount, error: usersError } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+
+      if (usersError) throw usersError;
+
+      // Fetch total views (sum of all post views)
+      const { data: viewsData, error: viewsError } = await supabase
+        .from("blog_posts")
+        .select("views");
+
+      if (viewsError) throw viewsError;
+
+      // Calculate total views
+      const totalViews = viewsData.reduce((sum, post) => sum + (post.views || 0), 0);
+
       setStats({
         posts: postsCount || 0,
-        users: 12, // Mock data
-        views: 1240, // Mock data
+        users: usersCount || 0,
+        views: totalViews,
         drafts: draftsCount || 0,
       });
     } catch (error) {
@@ -80,22 +91,30 @@ const Admin = () => {
     }
   };
 
-  // Show loading state when bypassing auth but still checking
-  if (adminLoading && !bypassAuth) {
+  // Show loading state when checking admin status
+  if (adminLoading) {
     return null;
   }
 
-  // Show nothing if not admin and not bypassing auth
-  if (!isAdmin && !bypassAuth) {
+  // Show nothing if not admin
+  if (!isAdmin) {
     return null;
   }
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your admin dashboard</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground">Welcome to your admin dashboard</p>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              Back to Site
+            </Link>
+          </Button>
         </div>
 
         {loading ? (

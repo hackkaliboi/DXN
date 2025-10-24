@@ -8,7 +8,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Home
 } from "lucide-react";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,10 +51,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
-  // Bypass authentication for development
-  const bypassAuth = true;
-
-  if (!isAdmin && !bypassAuth) {
+  if (!isAdmin) {
     return null;
   }
 
@@ -106,7 +104,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             })}
           </ul>
         </nav>
-        <div className="absolute bottom-0 w-full p-4 border-t border-border">
+        <div className="absolute bottom-0 w-full p-4 border-t border-border space-y-2">
+          <Button asChild variant="outline" className="w-full justify-start">
+            <Link to="/">
+              <Home className="h-5 w-5 mr-3" />
+              Back to Site
+            </Link>
+          </Button>
           <Button 
             variant="ghost" 
             className="w-full justify-start"
