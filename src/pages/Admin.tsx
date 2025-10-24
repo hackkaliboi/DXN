@@ -109,12 +109,7 @@ const Admin = () => {
             <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground">Welcome to your admin dashboard</p>
           </div>
-          <Button asChild variant="outline" className="w-full sm:w-auto">
-            <Link to="/">
-              <Home className="h-4 w-4 mr-2" />
-              Back to Site
-            </Link>
-          </Button>
+          {/* Removed the duplicate "Back to Site" button since it's already in the sidebar */}
         </div>
 
         {loading ? (
