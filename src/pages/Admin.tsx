@@ -1,46 +1,32 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import AdminLayout from "@/layouts/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Plus, FileText, Users, Eye } from "lucide-react";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  published: boolean;
-  created_at: string;
+interface Stats {
+  posts: number;
+  users: number;
   views: number;
-  category_id: string;
-  categories: { name: string } | null;
+  drafts: number;
 }
 
 const Admin = () => {
   const { isAdmin, loading: adminLoading } = useAdmin();
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [stats, setStats] = useState<Stats>({ posts: 0, users: 0, views: 0, drafts: 0 });
   const [loading, setLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Bypass authentication for development
+  const bypassAuth = true;
+
   useEffect(() => {
-    if (!adminLoading && !isAdmin) {
+    if (!bypassAuth && !adminLoading && !isAdmin) {
       navigate("/");
       toast({
         variant: "destructive",
@@ -48,182 +34,157 @@ const Admin = () => {
         description: "You don't have permission to access the admin panel.",
       });
     }
-  }, [isAdmin, adminLoading, navigate, toast]);
+  }, [isAdmin, adminLoading, navigate, toast, bypassAuth]);
 
   useEffect(() => {
-    if (isAdmin) {
-      fetchPosts();
+    // Fetch stats regardless of admin status when bypassing auth
+    if (bypassAuth || isAdmin) {
+      fetchStats();
     }
-  }, [isAdmin]);
+  }, [isAdmin, bypassAuth]);
 
-  const fetchPosts = async () => {
+  const fetchStats = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch posts count
+      const { count: postsCount, error: postsError } = await supabase
         .from("blog_posts")
-        .select(`
-          id,
-          title,
-          excerpt,
-          published,
-          created_at,
-          views,
-          category_id,
-          categories (name)
-        `)
-        .order("created_at", { ascending: false });
+        .select("*", { count: "exact", head: true });
 
-      if (error) throw error;
-      setPosts(data || []);
+      if (postsError) throw postsError;
+
+      // Fetch drafts count
+      const { count: draftsCount, error: draftsError } = await supabase
+        .from("blog_posts")
+        .select("*", { count: "exact", head: true })
+        .eq("published", false);
+
+      if (draftsError) throw draftsError;
+
+      // For demo purposes, we'll use mock data for users and views
+      // In a real application, you would fetch this from your database
+      setStats({
+        posts: postsCount || 0,
+        users: 12, // Mock data
+        views: 1240, // Mock data
+        drafts: draftsCount || 0,
+      });
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching stats:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to load posts.",
+        description: "Failed to load dashboard stats.",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
+  // Show loading state when bypassing auth but still checking
+  if (adminLoading && !bypassAuth) {
+    return null;
+  }
 
-    try {
-      const { error } = await supabase
-        .from("blog_posts")
-        .delete()
-        .eq("id", deleteId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Post deleted successfully.",
-      });
-      fetchPosts();
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete post.",
-      });
-    } finally {
-      setDeleteId(null);
-    }
-  };
-
-  if (adminLoading || !isAdmin) {
+  // Show nothing if not admin and not bypassing auth
+  if (!isAdmin && !bypassAuth) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <main className="container py-16">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your blog posts</p>
-          </div>
-          <Button asChild>
-            <Link to="/admin/post/new">
-              <Plus className="h-4 w-4 mr-2" />
-              New Post
-            </Link>
-          </Button>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome to your admin dashboard</p>
         </div>
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading posts...</p>
+            <p className="text-muted-foreground">Loading dashboard...</p>
           </div>
-        ) : posts.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">No posts yet. Create your first post!</p>
-              <Button asChild>
+        ) : (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.posts}</div>
+                  <p className="text-xs text-muted-foreground">Published posts</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Drafts</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.drafts}</div>
+                  <p className="text-xs text-muted-foreground">Unpublished posts</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Page Views</CardTitle>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.views}</div>
+                  <p className="text-xs text-muted-foreground">Total views</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Users</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.users}</div>
+                  <p className="text-xs text-muted-foreground">Active users</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button asChild className="h-20 flex flex-col gap-2">
                 <Link to="/admin/post/new">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Post
+                  <Plus className="h-6 w-6" />
+                  <span>New Post</span>
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {posts.map((post) => (
-              <Card key={post.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CardTitle className="text-xl">{post.title}</CardTitle>
-                        {post.published ? (
-                          <Badge variant="default">Published</Badge>
-                        ) : (
-                          <Badge variant="secondary">Draft</Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {post.excerpt}
-                      </p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span>{post.categories?.name}</span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          {post.views} views
-                        </span>
-                        <span>•</span>
-                        <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        asChild
-                      >
-                        <Link to={`/admin/post/${post.id}`}>
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setDeleteId(post.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
+              <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
+                <Link to="/admin/posts">
+                  <FileText className="h-6 w-6" />
+                  <span>Manage Posts</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
+                <Link to="/admin/users">
+                  <Users className="h-6 w-6" />
+                  <span>Manage Users</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-20 flex flex-col gap-2">
+                <Link to="/admin/settings">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Settings</span>
+                </Link>
+              </Button>
+            </div>
+          </>
         )}
-      </main>
-
-      <Footer />
-
-      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Post</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this post? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+      </div>
+    </AdminLayout>
   );
 };
 

@@ -85,7 +85,7 @@ const Index = () => {
   };
 
   const categories = Array.from(new Set(blogPosts.map((post) => post.category)));
-  
+
   const filteredPosts = blogPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -119,11 +119,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-gradient-hero opacity-90"
+        <div
+          className="absolute inset-0 bg-gradient-hero opacity-95"
           style={{
             backgroundImage: `url(${heroBg})`,
             backgroundSize: 'cover',
@@ -131,38 +131,58 @@ const Index = () => {
             backgroundBlendMode: 'overlay'
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
-        
-        <div className="relative container py-32 md:py-40">
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/40 to-background/90 dark:from-background/90 dark:via-background/60 dark:to-background/95" />
+
+        {/* Animated background elements */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-2/3 right-1/4 w-72 h-72 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-500" />
+        </div>
+
+        <div className="relative container py-24 md:py-32 lg:py-40">
           <div className="max-w-4xl mx-auto">
             <div className="text-center text-primary-foreground space-y-8 animate-fade-in">
-              <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4">
-                <span className="text-sm font-medium">✨ Welcome to DXN</span>
+              <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4 animate-bounce-in">
+                <span className="mr-2">✨</span>
+                <span className="text-sm font-medium">Welcome to DXN</span>
               </div>
-              
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight animate-slide-in-up">
                 Stories That <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">Inspire</span>
               </h1>
-              
-              <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+
+              <p className="text-lg sm:text-xl md:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed animate-slide-in-up delay-150">
                 Discover insights on design, productivity, and technology from creators around the world
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Button size="lg" className="text-lg px-8 hover-scale" asChild>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6 animate-slide-in-up delay-300">
+                <Button
+                  size="lg"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-6 hover-scale shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  asChild
+                >
                   <a href="#newsletter">Start Reading</a>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 text-white" asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-6 bg-white/10 backdrop-blur-sm border-white/30 hover:bg-white/20 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  asChild
+                >
                   <a href="#contributors">Meet Our Writers</a>
                 </Button>
               </div>
             </div>
           </div>
         </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-8 h-12 rounded-full border-2 border-white/30 flex justify-center p-1">
+            <div className="w-2 h-2 bg-white/50 rounded-full animate-scroll-bounce" />
+          </div>
+        </div>
       </section>
 
       {/* Featured Posts Section */}
@@ -174,7 +194,7 @@ const Index = () => {
               Hand-picked stories worth your time
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {featuredPosts.map((post) => (
               <BlogCard key={post.id} {...post} />
@@ -189,7 +209,7 @@ const Index = () => {
           <TrendingUp className="h-8 w-8 text-primary" />
           <h2 className="text-3xl md:text-4xl font-bold">Trending Now</h2>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {trendingPosts.map((post) => (
             <BlogCard key={post.id} {...post} />
@@ -204,7 +224,7 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Explore our complete collection
           </p>
-          
+
           <div className="space-y-6">
             <SearchBar onSearch={setSearchQuery} />
             <CategoryFilter
@@ -214,7 +234,7 @@ const Index = () => {
             />
           </div>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map((post) => (
             <BlogCard key={post.id} {...post} />
@@ -236,7 +256,7 @@ const Index = () => {
             Meet the talented writers behind our content
           </p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {authorPostCounts.map((author) => (
             <AuthorCard key={author.id} {...author} />

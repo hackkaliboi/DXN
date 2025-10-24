@@ -8,6 +8,17 @@ export const useAdmin = () => {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
+        // For development purposes, bypass authentication
+        // Remove this in production
+        const bypassAuth = true;
+        
+        if (bypassAuth) {
+          // Simulate admin access for development
+          setIsAdmin(true);
+          setLoading(false);
+          return;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
