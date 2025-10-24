@@ -25,7 +25,7 @@ const Newsletter = () => {
         <Mail className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-primary" />
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Stay Updated</h2>
         <p className="text-base sm:text-lg text-muted-foreground">
-          Get the latest articles and insights delivered directly to your inbox. No spam, unsubscribe anytime.
+          Get the latest scientific articles and research insights delivered directly to your inbox. No spam, unsubscribe anytime.
         </p>
         
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto pt-4">

@@ -149,11 +149,11 @@ const Index = () => {
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-slide-in-up">
-                Stories That <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">Inspire</span>
+                Scientific Stories That <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">Inspire</span>
               </h1>
 
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl opacity-90 max-w-2xl mx-auto leading-relaxed animate-slide-in-up delay-150">
-                Discover insights on design, productivity, and technology from creators around the world
+                Discover insights on science, research, and technology from creators around the world
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-8 animate-slide-in-up delay-300">

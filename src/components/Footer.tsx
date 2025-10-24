@@ -11,7 +11,7 @@ const Footer = () => {
               DXN
             </h3>
             <p className="text-sm text-muted-foreground">
-              A modern platform for sharing ideas and stories. Discover insights on design, productivity, and technology.
+              A modern platform for sharing scientific insights and discoveries. Explore the latest research in physics, astronomy, and medical science.
             </p>
           </div>
           
@@ -40,13 +40,13 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Categories</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/?category=Design" className="text-muted-foreground hover:text-primary transition-colors">
-                  Design
+                <Link to="/?category=Science" className="text-muted-foreground hover:text-primary transition-colors">
+                  Science
                 </Link>
               </li>
               <li>
-                <Link to="/?category=Productivity" className="text-muted-foreground hover:text-primary transition-colors">
-                  Productivity
+                <Link to="/?category=Research" className="text-muted-foreground hover:text-primary transition-colors">
+                  Research
                 </Link>
               </li>
               <li>
