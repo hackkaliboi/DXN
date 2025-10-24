@@ -121,7 +121,7 @@ const Index = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden hero-min-height">
         <div
           className="absolute inset-0 bg-gradient-hero opacity-95"
           style={{
@@ -140,8 +140,8 @@ const Index = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-500" />
         </div>
 
-        <div className="relative container py-16 sm:py-24 md:py-32 lg:py-40">
-          <div className="max-w-4xl mx-auto">
+        <div className="relative container flex items-center py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32">
+          <div className="max-w-4xl mx-auto w-full">
             <div className="text-center text-primary-foreground space-y-6 sm:space-y-8 animate-fade-in">
               <div className="inline-flex items-center px-3 py-1 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4 animate-bounce-in">
                 <span className="mr-2">✨</span>
@@ -156,7 +156,7 @@ const Index = () => {
                 Discover insights on design, productivity, and technology from creators around the world
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-6 animate-slide-in-up delay-300">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-8 animate-slide-in-up delay-300">
                 <Button
                   size="lg"
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 hover-scale shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -178,7 +178,7 @@ const Index = () => {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="w-6 h-10 sm:w-8 sm:h-12 rounded-full border-2 border-white/30 flex justify-center p-1">
             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/50 rounded-full animate-scroll-bounce" />
           </div>
