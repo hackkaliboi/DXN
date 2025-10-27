@@ -40,10 +40,32 @@ const BlogPost = () => {
   const author = post ? authors.find(a => a.id === post.authorId) : null;
 
   useEffect(() => {
+    console.log("BlogPost component mounted with id:", id);
+    if (!id) {
+      console.error("No post ID provided in URL");
+      setLoading(false);
+      return;
+    }
+
+    // Validate that id looks like a UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      console.error("Invalid post ID format:", id);
+      setLoading(false);
+      return;
+    }
+
     fetchPost();
   }, [id]);
 
   const fetchPost = async () => {
+    console.log("Fetching post with id:", id);
+
+    if (!id) {
+      console.error("No post ID provided");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("blog_posts")
@@ -56,9 +78,13 @@ const BlogPost = () => {
         .eq("published", true)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching post:", error);
+        throw error;
+      }
 
       if (data) {
+        console.log("Successfully fetched post:", data);
         // Increment views
         await supabase
           .from("blog_posts")

@@ -10,7 +10,9 @@ interface Comment {
   id: string;
   content: string;
   created_at: string;
-  profiles: {
+  user_id: string;
+  profiles?: {
+    id: string;
     full_name: string | null;
     avatar_url: string | null;
   } | null;
@@ -28,44 +30,102 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("CommentSection mounted with postId:", postId);
     if (postId) {
       fetchComments();
+    } else {
+      console.log("No postId provided to CommentSection");
+      setLoading(false);
     }
   }, [postId]);
 
   const fetchComments = async () => {
-    if (!postId) return;
-    
+    if (!postId) {
+      console.error("No postId provided");
+      setLoading(false);
+      return;
+    }
+
+    // Validate that postId looks like a UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(postId)) {
+      console.error("Invalid postId format:", postId);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Invalid post ID format: ${postId}`,
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      console.log("Fetching comments for postId:", postId);
+
+      // Fetch comments and user information separately to avoid relationship issues
+      const { data: commentsData, error: commentsError } = await supabase
         .from("comments")
         .select(`
           id,
           content,
           created_at,
-          profiles (full_name, avatar_url)
+          user_id
         `)
         .eq("post_id", postId)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching comments:", error);
+      if (commentsError) {
+        console.error("Error fetching comments:", {
+          message: commentsError.message,
+          details: commentsError.details,
+          hint: commentsError.hint,
+          code: commentsError.code
+        });
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to load comments. Please refresh the page.",
+          title: "Error Loading Comments",
+          description: `Failed to load comments: ${commentsError.message}`,
         });
         return;
       }
-      
-      setComments(data || []);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
+
+      // If we have comments, fetch the user profiles for each comment
+      if (commentsData && commentsData.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+
+        // Fetch profiles for these users
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, full_name, avatar_url")
+          .in("id", userIds);
+
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          // Continue with comments but without profile information
+        }
+
+        // Combine comments with profile information
+        const commentsWithProfiles = commentsData.map(comment => {
+          const profile = profilesData?.find(p => p.id === comment.user_id) || null;
+          return {
+            ...comment,
+            profiles: profile
+          };
+        });
+
+        console.log("Successfully fetched comments with profiles:", commentsWithProfiles);
+        setComments(commentsWithProfiles);
+      } else {
+        setComments(commentsData || []);
+      }
+    } catch (error: any) {
+      console.error("Exception fetching comments:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to load comments. Please refresh the page.",
+        description: `Failed to load comments: ${error.message || "Unknown error"}`,
       });
     } finally {
       setLoading(false);
@@ -75,6 +135,17 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim() || !postId) return;
+
+    // Validate that postId looks like a UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(postId)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Invalid post ID format: ${postId}`,
+      });
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -96,11 +167,16 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
         });
 
       if (error) {
-        console.error("Error posting comment:", error);
+        console.error("Error posting comment:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to post comment. Please try again.",
+          description: `Failed to post comment: ${error.message}`,
         });
         return;
       }
@@ -112,12 +188,12 @@ const CommentSection = ({ postId }: CommentSectionProps) => {
 
       setComment("");
       fetchComments(); // Refresh comments
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error posting comment:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to post comment. Please try again.",
+        description: `Failed to post comment: ${error.message || "Unknown error"}`,
       });
     } finally {
       setSubmitting(false);

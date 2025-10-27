@@ -29,30 +29,36 @@ const BlogCard = ({ id, title, excerpt, category, date, readTime, image }: BlogC
 
   const fetchInteractionCounts = async () => {
     if (!id) return;
-    
+
     try {
-      // Get likes count
-      const { data: likesData, error: likesError } = await supabase
-        .rpc('get_post_likes_count', { post_id: id });
-      
-      if (!likesError && likesData !== null) {
-        setLikesCount(likesData);
+      // Get likes count - direct query instead of RPC
+      const { count: likesCount, error: likesError } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", id);
+
+      if (!likesError && likesCount !== null) {
+        setLikesCount(likesCount);
       }
 
-      // Get comments count
-      const { data: commentsData, error: commentsError } = await supabase
-        .rpc('get_post_comments_count', { post_id: id });
-      
-      if (!commentsError && commentsData !== null) {
-        setCommentsCount(commentsData);
+      // Get comments count - direct query instead of RPC
+      const { count: commentsCount, error: commentsError } = await supabase
+        .from("comments")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", id);
+
+      if (!commentsError && commentsCount !== null) {
+        setCommentsCount(commentsCount);
       }
 
-      // Get shares count
-      const { data: sharesData, error: sharesError } = await supabase
-        .rpc('get_post_shares_count', { post_id: id });
-      
-      if (!sharesError && sharesData !== null) {
-        setSharesCount(sharesData);
+      // Get shares count - direct query instead of RPC
+      const { count: sharesCount, error: sharesError } = await supabase
+        .from("shares")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", id);
+
+      if (!sharesError && sharesCount !== null) {
+        setSharesCount(sharesCount);
       }
     } catch (error) {
       console.error("Error fetching interaction counts:", error);
@@ -65,8 +71,8 @@ const BlogCard = ({ id, title, excerpt, category, date, readTime, image }: BlogC
     <Link to={`/post/${id}`}>
       <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-card h-full flex flex-col">
         <div className="aspect-[16/9] overflow-hidden">
-          <img 
-            src={image} 
+          <img
+            src={image}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             onError={(e) => {
