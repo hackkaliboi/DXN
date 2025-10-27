@@ -1,17 +1,88 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import SearchBar from "@/components/SearchBar";
 import CategoryFilter from "@/components/CategoryFilter";
-import { blogPosts } from "@/data/blogPosts";
+import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "lucide-react";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  cover_image: string | null;
+  slug: string;
+  category: string;
+  author: string;
+  authorId: string;
+  date: string;
+  readTime: string;
+  views: number;
+  tags: string[];
+  featured?: boolean;
+  image: string;
+}
 
 const Archive = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
 
-  const categories = Array.from(new Set(blogPosts.map((post) => post.category)));
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const { data: posts, error } = await supabase
+        .from("blog_posts")
+        .select(`
+          *,
+          categories (name),
+          profiles (full_name)
+        `)
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const formattedPosts: BlogPost[] = (posts || []).map((post) => ({
+        id: post.id,
+        title: post.title,
+        excerpt: post.excerpt,
+        content: post.content,
+        cover_image: post.cover_image,
+        slug: post.slug,
+        category: post.categories?.name || "Uncategorized",
+        author: post.profiles?.full_name || "Anonymous",
+        authorId: post.author_id,
+        date: new Date(post.created_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        readTime: `${post.reading_time || 5} min read`,
+        views: post.views || 0,
+        tags: [],
+        image: post.cover_image || "",
+        featured: post.featured || false,
+      }));
+
+      setBlogPosts(formattedPosts);
+
+      // Extract unique categories
+      const uniqueCategories = Array.from(new Set(formattedPosts.map((post) => post.category)));
+      setCategories(uniqueCategories);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPosts = blogPosts.filter((post) => {
     const matchesSearch =
@@ -32,6 +103,18 @@ const Archive = () => {
     acc[month].push(post);
     return acc;
   }, {} as Record<string, typeof blogPosts>);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-16 text-center">
+          <p className="text-muted-foreground">Loading posts...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

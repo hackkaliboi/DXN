@@ -31,29 +31,39 @@ interface BlogPost {
   image: string;
 }
 
+interface Author {
+  id: string;
+  full_name: string;
+  bio: string;
+  avatar_url?: string;
+  postCount: number;
+}
+
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPosts();
+    fetchPostsAndAuthors();
   }, []);
 
-  const fetchPosts = async () => {
+  const fetchPostsAndAuthors = async () => {
     try {
-      const { data: posts, error } = await supabase
+      // Fetch posts
+      const { data: posts, error: postsError } = await supabase
         .from("blog_posts")
         .select(`
           *,
           categories (name),
-          profiles (full_name)
+          profiles (full_name, avatar_url)
         `)
         .eq("published", true)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (postsError) throw postsError;
 
       const formattedPosts: BlogPost[] = (posts || []).map((post) => ({
         id: post.id,
@@ -74,11 +84,35 @@ const Index = () => {
         views: post.views || 0,
         tags: [],
         image: post.cover_image || "",
+        featured: post.featured || false,
       }));
 
       setBlogPosts(formattedPosts);
+
+      // Fetch authors and their post counts
+      const { data: authorData, error: authorError } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          full_name,
+          bio,
+          avatar_url
+        `);
+
+      if (authorError) throw authorError;
+
+      // Calculate post counts for each author
+      const authorsWithPostCounts: Author[] = (authorData || []).map((author) => {
+        const postCount = formattedPosts.filter(post => post.authorId === author.id).length;
+        return {
+          ...author,
+          postCount
+        };
+      });
+
+      setAuthors(authorsWithPostCounts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching posts and authors:", error);
     } finally {
       setLoading(false);
     }
@@ -96,13 +130,8 @@ const Index = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPosts = blogPosts.slice(0, 2);
+  const featuredPosts = blogPosts.filter(post => post.featured).slice(0, 2);
   const trendingPosts = [...blogPosts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 3);
-
-  const authorPostCounts = authors.map((author) => ({
-    ...author,
-    postCount: blogPosts.filter((post) => post.authorId === author.id).length,
-  }));
 
   if (loading) {
     return (
@@ -260,8 +289,15 @@ const Index = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {authorPostCounts.map((author) => (
-            <AuthorCard key={author.id} {...author} />
+          {authors.map((author) => (
+            <AuthorCard
+              key={author.id}
+              id={author.id}
+              name={author.full_name}
+              bio={author.bio}
+              postCount={author.postCount}
+              avatar={author.avatar_url}
+            />
           ))}
         </div>
       </section>

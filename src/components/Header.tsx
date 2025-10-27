@@ -57,26 +57,26 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <span className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
-            DXN Science
+            DXN
           </span>
         </Link>
-        
+
         {/* Mobile menu button */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
-        
+
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-4">
           {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.href} 
+            <Link
+              key={item.name}
+              to={item.href}
               className="text-sm font-medium transition-colors hover:text-primary"
             >
               {item.name}
@@ -114,16 +114,16 @@ const Header = () => {
           )}
         </nav>
       </div>
-      
+
       {/* Mobile navigation */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur">
           <div className="container py-4 space-y-4">
             <div className="flex flex-col space-y-3">
               {navItems.map((item) => (
-                <Link 
-                  key={item.name} 
-                  to={item.href} 
+                <Link
+                  key={item.name}
+                  to={item.href}
                   className="text-sm font-medium py-2 transition-colors hover:text-primary"
                   onClick={() => setMobileMenuOpen(false)}
                 >

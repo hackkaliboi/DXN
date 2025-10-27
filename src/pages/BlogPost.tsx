@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { authors } from "@/data/blogPosts";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ReadingProgress from "@/components/ReadingProgress";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
+import PostInteractions from "@/components/PostInteractions";
 import BackToTop from "@/components/BackToTop";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ const BlogPost = () => {
   const { id } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const commentSectionRef = useRef<HTMLDivElement>(null);
   const author = post ? authors.find(a => a.id === post.authorId) : null;
 
   useEffect(() => {
@@ -110,6 +112,10 @@ const BlogPost = () => {
     }
   };
 
+  const scrollToComments = () => {
+    commentSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -139,7 +145,7 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background">
       <ReadingProgress />
       <Header />
-      
+
       <article className="container max-w-4xl py-12">
         <Breadcrumbs
           items={[
@@ -156,13 +162,13 @@ const BlogPost = () => {
                 <Badge key={tag} variant="outline">{tag}</Badge>
               ))}
             </div>
-            
+
             <h1 className="text-5xl font-bold leading-tight">
               {post.title}
             </h1>
-            
+
             <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-              <Link 
+              <Link
                 to={`/author/${post.authorId}`}
                 className="flex items-center gap-2 hover:text-primary transition-colors"
               >
@@ -185,18 +191,19 @@ const BlogPost = () => {
               )}
             </div>
 
-            <SocialShare url={`/post/${post.id}`} title={post.title} />
+            {/* Replace SocialShare with PostInteractions */}
+            <PostInteractions postId={post.id} onCommentClick={scrollToComments} />
           </div>
 
           <div className="aspect-[21/9] overflow-hidden rounded-xl">
-            <img 
-              src={post.image} 
+            <img
+              src={post.image}
               alt={post.title}
               className="w-full h-full object-cover"
             />
           </div>
 
-          <div 
+          <div
             className="prose prose-lg max-w-none pt-8 prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-a:text-primary"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
@@ -204,7 +211,7 @@ const BlogPost = () => {
           {author && (
             <div className="mt-12 p-6 border border-border rounded-xl bg-gradient-card">
               <h3 className="text-lg font-bold mb-3">About the Author</h3>
-              <Link 
+              <Link
                 to={`/author/${author.id}`}
                 className="flex items-start gap-4 hover:opacity-80 transition-opacity"
               >
@@ -219,7 +226,10 @@ const BlogPost = () => {
             </div>
           )}
 
-          <CommentSection />
+          {/* Add ref to comment section for scrolling */}
+          <div ref={commentSectionRef}>
+            <CommentSection postId={post.id} />
+          </div>
         </div>
       </article>
 

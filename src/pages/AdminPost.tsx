@@ -19,6 +19,18 @@ interface Category {
   name: string;
 }
 
+interface PostFormData {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  cover_image: string;
+  category_id: string;
+  published: boolean;
+  featured: boolean;
+  [key: string]: any; // Allow additional properties
+}
+
 const AdminPost = () => {
   const { id } = useParams();
   const isNewPost = id === "new";
@@ -30,7 +42,7 @@ const AdminPost = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PostFormData>({
     title: "",
     slug: "",
     excerpt: "",
@@ -38,6 +50,7 @@ const AdminPost = () => {
     cover_image: "",
     category_id: "",
     published: false,
+    featured: false,
   });
 
   useEffect(() => {
@@ -83,7 +96,11 @@ const AdminPost = () => {
         .single();
 
       if (error) throw error;
-      setFormData(data);
+      setFormData({
+        ...formData,
+        ...data,
+        featured: data.featured || false
+      });
     } catch (error) {
       console.error("Error fetching post:", error);
       toast({
@@ -314,6 +331,15 @@ const AdminPost = () => {
                       id="published"
                       checked={formData.published}
                       onCheckedChange={(checked) => setFormData({ ...formData, published: checked })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="featured">Featured</Label>
+                    <Switch
+                      id="featured"
+                      checked={formData.featured}
+                      onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
                     />
                   </div>
 
